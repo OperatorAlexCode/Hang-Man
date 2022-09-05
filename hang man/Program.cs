@@ -124,6 +124,10 @@ namespace Code
             Console.Write("\n");
         }
 
+        /// <summary>
+        /// Used to check if one wants to continue
+        /// </summary>
+        /// <returns>string of either Y or N</returns>
         public static string ContinueCheck()
         {
             string? awnser = Console.ReadKey(true).Key.ToString();
@@ -139,7 +143,7 @@ namespace Code
         public static string SelectWord()
         {
             bool selectedWord = false;
-            string whatWord = "";
+            string? whatWord = "";
 
             while (!selectedWord)
             {
