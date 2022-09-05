@@ -11,14 +11,16 @@ namespace Code
 
             bool playing = true;
 
-            List<string> menuOptions = new() { "1", "2", "3", "4"};
-            List<string> states = new() { "\r\n\r\n\r\n\r\n\r\n", "\r\n\r\n\r\n\r\n╩", "\r\n║\r\n║\r\n║\r\n╩", "╔═╗\r\n║\r\n║\r\n║\r\n╩", "╔═╗\r\n║ ◯\r\n║\r\n║\r\n╩ ", "╔═╗\r\n║ ◯\r\n║ │\r\n║   \r\n╩ ", "╔═╗\r\n║ ◯\r\n║ │\r\n║ ┴\r\n╩", "╔═╗\r\n║ ◯\r\n║ ┼\r\n║ ┴\r\n╩\r\n"
+            List<ConsoleKey> menuOptions = new() { ConsoleKey.D1, ConsoleKey.D2, ConsoleKey.Escape };
+            List<string> states = new() { "\r\n\r\n\r\n\r\n\r\n", "\r\n\r\n\r\n\r\n╩", "\r\n║\r\n║\r\n║\r\n╩", "╔═╗\r\n║\r\n║\r\n║\r\n╩", "╔═╗\r\n║ ◯\r\n║\r\n║\r\n╩ ", "╔═╗\r\n║ ◯\r\n║ │\r\n║   \r\n╩ ", "╔═╗\r\n║ ◯\r\n║ │\r\n║ ┴\r\n╩", "╔═╗\r\n║ ◯\r\n║ ┼\r\n║ ┴\r\n╩\r"
 };
             List<string> customWordList = new();
 
             while (playing)
             {
-                string chosenWord = GiveRandomWord();
+                string chosenWord;
+                
+                MainMenu(menuOptions,out chosenWord);
 
                 int wrongGuesses = 0;
                 int rightGuesses = 0;
@@ -35,6 +37,13 @@ namespace Code
 
                     Console.WriteLine(states[wrongGuesses]);
 
+                    List<string> wrongLetters = new();
+
+                    wrongLetters.AddRange(guessedLetters.Where(l => !chosenWord.Contains(l)));
+
+                    foreach (var letter in wrongLetters)
+                        Console.Write($"{letter} ");
+
                     if (chosenWord.Length == rightGuesses)
                     {
                         won = true;
@@ -46,9 +55,7 @@ namespace Code
                         string? guess = Console.ReadKey(true).Key.ToString();
 
                         while (guessedLetters.Any(l => l.ToString() == guess))
-                        {
                             guess = Console.ReadKey(true).Key.ToString();
-                        }
 
                         bool isGuessInWord = false;
                         foreach (char letter in chosenWord)
@@ -61,21 +68,17 @@ namespace Code
                         }
 
                         if (!isGuessInWord)
-                        {
                             wrongGuesses++;
-                        }
 
                         guessedLetters.Add(guess.ToString());
                     }
                 }
 
                 if (!won)
-                    Console.WriteLine("You Lose! Want to try again? Y/N");
+                    Console.WriteLine($"\nYou Lose! The word was {chosenWord}. Want to try again? Y/N");
 
                 if (ContinueCheck() == "N")
-                {
                     playing = false;
-                }
             }
 
             Console.WriteLine("Thank you, come again :)");
@@ -83,7 +86,7 @@ namespace Code
 
         public static string GiveRandomWord()
         {
-            List<string> wordList = new() { "PEN", "BOAT", "HOME", "BUSS", "SCHOOL" };
+            List<string> wordList = new() { "PEN", "BOAT", "HOME", "BUSS", "SCHOOL", "MACHINE", "CAR", "PLANE", "MOUSE", "DOG", "CAT", "JAZZ", "CONSISTENT", "HAPPY", "SAD", "ANGRY" };
 
             return wordList[new Random().Next(0, wordList.Count)];
         }
@@ -115,6 +118,68 @@ namespace Code
             }
 
             return awnser;
+        }
+
+        public static string SelectWord()
+        {
+            bool selectedWord = false;
+            string whatWord = "";
+
+            while (!selectedWord)
+            {
+                Console.Clear();
+                Console.WriteLine("Write a word");
+                whatWord = Console.ReadLine();
+
+                if (whatWord != null || whatWord != "")
+                {
+                    Console.WriteLine("Do you want to choose this word? Y/N");
+
+                    ConsoleKey input = Console.ReadKey(true).Key;
+
+                    while(input!=ConsoleKey.Y && input != ConsoleKey.N)
+                    {
+                        input = Console.ReadKey(true).Key;
+                    }
+
+                    if(input== ConsoleKey.Y)
+                    {
+                        selectedWord = true;
+                    }
+
+                }
+            }
+
+            return whatWord.ToUpper();
+        }
+
+        public static void MainMenu(List<ConsoleKey> validOptions, out string chosenWord)
+        {
+            Console.WriteLine("Main Menu");
+            Console.WriteLine("1. Play with random word");
+            Console.WriteLine("2. Choose word to play with");
+
+            ConsoleKey awnser = Console.ReadKey(true).Key;
+
+            while (!validOptions.Any(o => o == awnser))
+                awnser = Console.ReadKey(true).Key;
+
+            string tempVar = "";
+
+            switch (awnser)
+            {
+                case ConsoleKey.D1:
+                    tempVar = GiveRandomWord();
+                    break;
+                case ConsoleKey.D2:
+                    tempVar = SelectWord();
+                    break;
+                case ConsoleKey.Escape:
+                    Environment.Exit(0);
+                    break;
+            }
+
+            chosenWord = tempVar;
         }
     }
 }
